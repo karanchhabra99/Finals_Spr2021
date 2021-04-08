@@ -11,7 +11,6 @@ class GameState():
         self.move = Move(dim)
         self.dim = dim
         self.board = self.get_board()
-        self.black_board = np.flipud(self.board)
         self.Player_turn = 1
         self.last_move = None
 
@@ -30,20 +29,6 @@ class GameState():
             [1, 1, 1, 1, 1, 1, 1, 1],
             [5, 3, 2, 9, 1000, 2, 3, 5]])
 
-
-        # board = np.array([
-        #     [-2, -9, -1000, -3, -5, -2, -3, -5],
-        #     [0, 0, 0, 0, 0, 0, 0, 0],
-        #     [0, 0, 0, 0, 0, 0, 0, 0],
-        #     [0, 0, 0, 0, 0, 0, 0, 0],
-        #     [0, 0, 0, 0, 0, 0, 0, 0],
-        #     [0, 0, 0, 0, 0, 0, 0, 0],
-        #     [0, 0, 0, 0, 0, 0, 0, 0],
-        #     [5, 2, 1000, 9, 3, 2, 3, 5]])
-
-
-        # print(board[0, :])
-        #
         # # board[0,:] = np.random.shuffle(board[0,:])
 
         return copy.deepcopy(board[:,:self.dim])
@@ -51,28 +36,7 @@ class GameState():
 
     def makeMove(self, start_square, end_square):
         flag = 0
-        # Change Player turns and Check if move is valid
-        if self.Player_turn == 1:
-            ## Checking if the correct piece is chosen
-            if self.board[start_square[0],start_square[1]] > 0:
-                flag = self.human.play(self.board, start_square, end_square, self.Player_turn, self.last_move)
-        else:
-            ## Checking if the correct piece is chosen
-            if self.board[start_square[0],start_square[1]] < 0:
-                if self.board[start_square[0], start_square[1]] == -1:
-                    temp1 = self.board[start_square[0], start_square[1]]
-                    self.board[start_square[0], start_square[1]] = 25
-                    inverse_start = np.where(self.black_board == 25)
-                    self.board[start_square[0], start_square[1]] = temp1
-
-                    temp2 = self.board[end_square[0], end_square[1]]
-                    self.board[end_square[0], end_square[1]] = 25
-                    inverse_end = np.where(self.black_board == 25)
-                    self.board[end_square[0], end_square[1]] = temp2
-
-                    flag = self.human2.play(self.black_board, (inverse_start[0][0], inverse_start[1][0]), (inverse_end[0][0], inverse_end[1][0]), self.Player_turn, self.last_move)
-                else:
-                    flag = self.human2.play(self.board, start_square, end_square, self.Player_turn, self.last_move)
+        flag = self.human.play(self.board, start_square, end_square, self.Player_turn, self.last_move)
 
         ## Makes the move
         if flag == 1:
@@ -95,6 +59,7 @@ class Pawn():
 
     def pawn_move_checker_en_passant(self, board, current_location, next_location, last_move, Player_turn):
         self.Player_turn = Player_turn
+
         if next_location in self.all_move_pawn(current_location, next_location):
             check = self.is_possible_pawn(board, current_location, next_location, last_move)
             if check[0]:
@@ -121,7 +86,7 @@ class Pawn():
         return 0
 
     def all_move_pawn(self, start_square, end_square):
-        if end_square[1] >= self.dim:
+        if end_square[1] >= 8:
             return []
 
         return [(start_square[0]- 1, start_square[1]), (start_square[0]-2, start_square[1]),
@@ -432,7 +397,22 @@ class Move():
     def check_piece_and_play(self, board, current_location, next_location, Player_turn, last_move):
         self.Player_turn = Player_turn
         if board[current_location[0], current_location[1]] == self.Player_turn * 1:
-            return self.pawn.pawn_move_checker_en_passant(board, current_location, next_location, last_move, Player_turn)
+            ## Flipping the board for black player
+            if board[current_location[0], current_location[1]] == -1:
+                temp1 = board[current_location[0], current_location[1]]
+                board[current_location[0], current_location[1]] = 25
+                black_board = np.flipud(board)
+                inverse_start = np.where(black_board == 25)
+                board[current_location[0], current_location[1]] = temp1
+
+                temp2 = board[next_location[0], next_location[1]]
+                board[next_location[0], next_location[1]] = 25
+                inverse_end = np.where(black_board == 25)
+                board[next_location[0], next_location[1]] = temp2
+                return self.pawn.pawn_move_checker_en_passant(black_board, inverse_start, inverse_end, last_move,
+                                                              Player_turn)
+            else:
+                return self.pawn.pawn_move_checker_en_passant(board, current_location, next_location, last_move, Player_turn)
         elif board[current_location[0], current_location[1]] == self.Player_turn * 2:
             return self.bishop.bishop_move_checker(board, current_location, next_location, Player_turn)
         elif board[current_location[0], current_location[1]] == self.Player_turn * 3:
