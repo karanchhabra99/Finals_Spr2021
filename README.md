@@ -9,6 +9,9 @@ ChessMain.py file code in this file has been taken from the below links (Only mi
 https://www.youtube.com/watch?v=EnYui0e73Rs&list=PLBwF487qi8MGU81nDGaeNE1EnNEPYWKY_&ab_channel=EddieSharick
 <br><br>
 - The ChessEngine.py copies the methods __init__ and makeMove from class GameState(), although the have been modified significantly, there is a possibility the might resemble to original code which is taken from the below links: <br>1. https://github.com/MikeCreator-put/Chess/tree/887e6d08b27dc79d61a447a8c31236cfb7dbbfbc <br> 2. https://www.youtube.com/watch?v=EnYui0e73Rs&list=PLBwF487qi8MGU81nDGaeNE1EnNEPYWKY_&ab_channel=EddieSharick
+<br><br>
+- Minimax Algorithm
+https://www.youtube.com/watch?v=l-hh51ncgDI&ab_channel=SebastianLague
 
 
 
