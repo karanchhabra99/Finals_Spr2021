@@ -1,3 +1,17 @@
+# Crazy Chess
+Team Members:
+- Karan Chhabra (karanc2)
+- Zhiyan Ren
+
+Reference:<br>
+- ChessMain.py creates GUI for the games of chess.\
+ChessMain.py file code in this file has been taken from the below links (Only minor changes has been done to it): https://github.com/MikeCreator-put/Chess/tree/887e6d08b27dc79d61a447a8c31236cfb7dbbfbc
+https://www.youtube.com/watch?v=EnYui0e73Rs&list=PLBwF487qi8MGU81nDGaeNE1EnNEPYWKY_&ab_channel=EddieSharick
+<br><br>
+- The ChessEngine.py copies the methods __init__ and makeMove from class GameState(), although the have been modified significantly, there is a possibility the might resemble to original code which is taken from the below links: <br>1. https://github.com/MikeCreator-put/Chess/tree/887e6d08b27dc79d61a447a8c31236cfb7dbbfbc <br> 2. https://www.youtube.com/watch?v=EnYui0e73Rs&list=PLBwF487qi8MGU81nDGaeNE1EnNEPYWKY_&ab_channel=EddieSharick
+
+
+
 # IS597DS - Finals_Spr2021
 
 Each project from this semester is a public fork linked from this repository.  This is just one of the many assignments students worked on for the course, but this is the *only* one they are permitted to publish openly.

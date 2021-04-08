@@ -4,6 +4,7 @@
 ## Assumption : No Castling
             # Pawn can't check King
 import numpy as np
+from AIPlayer import *
 import copy
 
 class GameState():
