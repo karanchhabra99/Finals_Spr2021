@@ -86,11 +86,27 @@ class Pawn():
         return 0
 
     def all_move_pawn(self, start_square, end_square):
-        if end_square[1] >= 8:
+        if end_square[1] >= self.dim:
+            return []
+        result = [(start_square[0]- 1, start_square[1]), (start_square[0]-2, start_square[1])]
+        if not (start_square[1]-1) < 0:
+            result.append((start_square[0]-1, start_square[1]-1))
+        if (start_square[1]+1) < self.dim:
+            result.append((start_square[0] - 1, start_square[1] + 1))
+        return result
+
+    def all_AI_black_move_pawn(self, start_square, end_square):
+        ## ToDo:verify this when implementing getting all moves
+        if end_square[1] >= self.dim:
             return []
 
-        return [(start_square[0]- 1, start_square[1]), (start_square[0]-2, start_square[1]),
-                (start_square[0]-1, start_square[1]-1), (start_square[0]-1, start_square[1]+1)]
+        result = [(start_square[0]+ 1, start_square[1]), (start_square[0]+2, start_square[1])]
+        if not (start_square[1]-1) < 0:
+            result.append((start_square[0]+1, start_square[1]-1))
+        if (start_square[1]+1) < self.dim:
+            result.append((start_square[0] + 1, start_square[1] + 1))
+        return result
+
 
     def is_possible_pawn(self, board, current_location, next_location, last_move):
         # Checking if it is attack or straight move
@@ -159,15 +175,28 @@ class Knight():
     def all_move_knight(self, start_square, end_square):
         if end_square[1] >= self.dim:
             return []
-
-        return [(start_square[0] + 1, start_square[1] + 2),
-                (start_square[0] - 1, start_square[1] - 2),
-                (start_square[0] + 1, start_square[1] - 2),
-                (start_square[0] - 1, start_square[1] + 2),
-                (start_square[0] + 2, start_square[1] + 1),
-                (start_square[0] - 2, start_square[1] - 1),
-                (start_square[0] + 2, start_square[1] - 1),
-                (start_square[0] - 2, start_square[1] + 1)]
+        result = []
+        if start_square[0] + 1 < 8:
+            if start_square[1] + 2 < self.dim:
+                result.append((start_square[0] + 1, start_square[1] + 2))
+            if start_square[1] - 2 >= 0:
+                result.append((start_square[0] + 1, start_square[1] - 2))
+        if start_square[0] - 1 >= 0:
+            if start_square[1] + 2 < self.dim:
+                result.append((start_square[0] - 1, start_square[1] + 2))
+            if start_square[1] - 2 >= 0:
+                result.append((start_square[0] - 1, start_square[1] - 2))
+        if start_square[0] + 2 < 8:
+            if start_square[1] + 1 < self.dim:
+                result.append((start_square[0] + 2, start_square[1] + 1))
+            if start_square[1] - 1 >= 0:
+                result.append((start_square[0] + 2, start_square[1] - 1))
+        if start_square[0] - 2 >= 0:
+            if start_square[1] + 1 < self.dim:
+                result.append((start_square[0] - 2, start_square[1] + 1))
+            if start_square[1] - 1 >= 0:
+                result.append((start_square[0] - 2, start_square[1] - 1))
+        return result
 
 class Bishop():
     def __init__(self, dim):
