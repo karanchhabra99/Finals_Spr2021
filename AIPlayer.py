@@ -14,12 +14,14 @@ class AIPlayer():
         return self.move.check_piece_and_play(board, current_location, next_location, Player_turn, last_move)
 
     ## Reference: https://www.youtube.com/watch?v=l-hh51ncgDI&ab_channel=SebastianLague
-    def Minimax(self, board, Player_turn, last_move, dept):
-        if (dept == 0) or (len(np.where(board == 1000)) == 0) or (len(np.where(board == -1000)) == 0):
-            return self.board_score(board)
-
-        if self.Player_turn == Player_turn:
-            maxEval_score = -999999
+    # def Minimax(self, board, Player_turn, last_move, dept):
+    #     if (dept == 0) or (len(np.where(board == 1000)) == 0) or (len(np.where(board == -1000)) == 0):
+    #         return self.board_score(board)
+    #
+    #     if self.Player_turn == Player_turn:
+    #         maxEval_score = -999999
+            # for possibel
+            #     mini
 
 
 

@@ -172,10 +172,13 @@ class Knight():
                 if board[next_location[0], next_location[1]] >= 0:
                     return 1
         return 0
-
+    ## end_sqaure(8<, self.dim<)
     def all_move_knight(self, start_square, end_square):
         if end_square[1] >= self.dim:
             return []
+        return self.all_move_knight_helper(start_square)
+
+    def all_move_knight_helper(self, start_square):
         result = []
         if start_square[0] + 1 < 8:
             if start_square[1] + 2 < self.dim:
@@ -204,12 +207,14 @@ class Bishop():
         self.dim = dim
         self.Player_turn = 1
 
+    ## go through
     def bishop_move_checker(self, board, current_location, next_location, Player_turn):
         self.Player_turn = Player_turn
         if next_location in self.diagonal_moves(board, current_location, Player_turn):
             return 1
         return 0
 
+    ## all_move
     def diagonal_moves(self, board, current_location, Player_turn):
         self.Player_turn = Player_turn
         all_moves = []
@@ -473,11 +478,20 @@ Modyfing a Heuristic score map: Karan
 
 AI:
 Get all the possible move for each piece: Karan
-Pawn, Knight, Bishop, Queen, Rook, King
+- Pawn - self.dim  
+
+
+, Knight - self.dim
+, King - self.dim
+, Bishop
+, Queen
+, Rook
+
 For each possible we need check what will be the game board score as we go deep: Zhiyan
 And calculate the heursitic score for the bottom-up: Zhiyan 
 [for whites turn: 
 Score = whites pieces(including the positions value) - Black pieces(including the positions value)]
 
 3 piece modifications: Karan
+Table - Karan 
 '''
