@@ -6,6 +6,7 @@
 import numpy as np
 from AIPlayer import *
 import copy
+import time
 
 class GameState():
     def __init__(self, dim):
@@ -16,8 +17,8 @@ class GameState():
         self.last_move = None
 
         ## ToDO: AI and Human
-        self.human = HumanPlayer(self.dim, self.move)
-        self.human2 = HumanPlayer(self.dim, self.move)
+        self.player1 = HumanPlayer(self.dim, self.move)
+        self.player2 = AIPlayer(self.dim, self.move, -1)
 
     def get_board(self):
         board = np.array([
@@ -36,8 +37,9 @@ class GameState():
 
 
     def makeMove(self, start_square, end_square):
+        print(self.player2.play(self.board, self.last_move))
         flag = 0
-        flag = self.human.play(self.board, start_square, end_square, self.Player_turn, self.last_move)
+        flag = self.player1.play(self.board, start_square, end_square, self.Player_turn, self.last_move)
 
         ## Makes the move
         if flag == 1:
@@ -48,7 +50,13 @@ class GameState():
             if self.Player_turn == 1:
                 self.Player_turn = -1
                 print('\n\nBlacks Turn')
-            else:
+                S, E = self.player2.play(self.board, self.last_move)
+                print(S)
+                print(E)
+                self.makeMove(S, E)
+
+                time.sleep(1)
+            # else:
                 self.Player_turn = 1
                 print("\n\nWhites Turn")
 
@@ -89,19 +97,25 @@ class Pawn():
     def all_move_pawn(self, start_square, end_square):
         if end_square[1] >= self.dim:
             return []
-        result = [(start_square[0]- 1, start_square[1]), (start_square[0]-2, start_square[1])]
-        if not (start_square[1]-1) < 0:
-            result.append((start_square[0]-1, start_square[1]-1))
-        if (start_square[1]+1) < self.dim:
+
+        return self.all_move_pawn_helper(start_square)
+
+
+    def all_move_pawn_helper(self, start_square):
+        result = [(start_square[0] - 1, start_square[1])]
+        if not start_square[0]-2 <= 0:
+            result.append((start_square[0] - 2, start_square[1]))
+        if not (start_square[1] - 1) < 0:
+            result.append((start_square[0] - 1, start_square[1] - 1))
+        if (start_square[1] + 1) < self.dim:
             result.append((start_square[0] - 1, start_square[1] + 1))
         return result
 
-    def all_AI_black_move_pawn(self, start_square, end_square):
+    def all_AI_black_move_pawn(self, start_square):#, end_square):
         ## ToDo:verify this when implementing getting all moves
-        if end_square[1] >= self.dim:
-            return []
-
-        result = [(start_square[0]+ 1, start_square[1]), (start_square[0]+2, start_square[1])]
+        result = [(start_square[0]+ 1, start_square[1])]
+        if not start_square[0]+2 >= 8:
+            result.append((start_square[0]+2, start_square[1]))
         if not (start_square[1]-1) < 0:
             result.append((start_square[0]+1, start_square[1]-1))
         if (start_square[1]+1) < self.dim:
@@ -120,10 +134,12 @@ class Pawn():
                 ## Checking if the move is 2 steps ahead
                 if check[1] ==1:
                     if self.Player_turn == -1:
+                        temp_piece = board[next_location[0], next_location[1]]
                         board[next_location[0], next_location[1]] = 25
                         inverse_board = np.flipud(board)
                         inverse_move = np.where(inverse_board == 25)
                         self.en_passant_potentials = (inverse_move[0][0], next_location[1])
+                        board[next_location[0], next_location[1]] = temp_piece
                     else:
                         self.en_passant_potentials = next_location
                 return (True, 0)
@@ -135,10 +151,11 @@ class Pawn():
                     return (True, 0)
                 if self.en_passant_potentials != None:
                     ## En Passant
-                    if ((last_move[1] == self.en_passant_potentials[0]) and (last_move[2] == self.en_passant_potentials[1])):
-                        if (current_location[0] == 3) and (next_location[1] == self.en_passant_potentials[1]):
-                            if board[current_location[0], next_location[1]] == self.Player_turn *-1:
-                                return (True, 1)
+                    if last_move != None:
+                        if ((last_move[1] == self.en_passant_potentials[0]) and (last_move[2] == self.en_passant_potentials[1])):
+                            if (current_location[0] == 3) and (next_location[1] == self.en_passant_potentials[1]):
+                                if board[current_location[0], next_location[1]] == self.Player_turn *-1:
+                                    return (True, 1)
 
         return (False, 0)
 
@@ -472,15 +489,11 @@ class HumanPlayer():
 ''''
 Modification:
 Original
-
-Issue AI: Karan
-Modyfing a Heuristic score map: Karan 
+Modfying a Heuristic score map: Karan 
 
 AI:
 Get all the possible move for each piece: Karan
-- Pawn - self.dim  
-
-
+- Pawn - self.dim
 , Knight - self.dim
 , King - self.dim
 , Bishop
@@ -493,5 +506,5 @@ And calculate the heursitic score for the bottom-up: Zhiyan
 Score = whites pieces(including the positions value) - Black pieces(including the positions value)]
 
 3 piece modifications: Karan
-Table - Karan 
+Make AI play - Karan
 '''
