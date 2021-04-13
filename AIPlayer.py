@@ -24,31 +24,44 @@ class AIPlayer():
             maxEval_score = -999999
             best_move = None
             ## Pawn Moves
-            ## ToDo: make it dynamic
             all_pawns = np.where(board == 1*Player_turn)
             for p in range(len(all_pawns[0])):
                 if Player_turn == 1:
                     all_pawn_moves = self.move.pawn.all_move_pawn_helper((all_pawns[0][p], all_pawns[1][p]))
                 else:
                     all_pawn_moves = self.move.pawn.all_AI_black_move_pawn((all_pawns[0][p], all_pawns[1][p]))
+
+
                 for each_move in all_pawn_moves:
                     # print((all_pawns[0][p], all_pawns[1][p]), each_move)
-                    if self.move.check_piece_and_play(board, (all_pawns[0][p], all_pawns[1][p]), each_move, Player_turn, last_move) == 1:
-                            # pawn.pawn_move_checker_en_passant(board, (all_pawns[0][p], all_pawns[1][p]), each_move, , Player_turn) == 1:
-                        board_p = copy.deepcopy(board)
-                        ## Making changes on the board
-                        last_move_p = (board_p[all_pawns[0][p], all_pawns[1][p]], each_move[0], each_move[1])
-                        board_p[each_move[0], each_move[1]] = board_p[all_pawns[0][p], all_pawns[1][p]]
-                        board_p[all_pawns[0][p], all_pawns[1][p]] = 0
+                    if Player_turn == -1:
+                        if each_move[0] == 7:
+                            board_p = copy.deepcopy(board)
+                            ## Making changes on the board
+                            last_move_p = (board_p[all_pawns[0][p], all_pawns[1][p]], each_move[0], each_move[1])
+                            board_p[each_move[0], each_move[1]] = 9
+                            board_p[all_pawns[0][p], all_pawns[1][p]] = 0
 
-                        eval = self.Minimax(board_p, Player_turn *-1, last_move_p, 0)
-                        maxEval_score = max(maxEval_score, eval)
-                        if maxEval_score == eval:
-                            best_move = [(all_pawns[0][p], all_pawns[1][p]), each_move]
+                            eval = self.Minimax(board_p, Player_turn * -1, last_move_p, 0)
+                            maxEval_score = max(maxEval_score, eval)
+                            if maxEval_score == eval:
+                                best_move = [(all_pawns[0][p], all_pawns[1][p]), each_move]
+                        elif self.move.check_piece_and_play(board, (all_pawns[0][p], all_pawns[1][p]), each_move, Player_turn, last_move) == 1:
+                                # pawn.pawn_move_checker_en_passant(board, (all_pawns[0][p], all_pawns[1][p]), each_move, , Player_turn) == 1:
+                            board_p = copy.deepcopy(board)
+                            ## Making changes on the board
+                            last_move_p = (board_p[all_pawns[0][p], all_pawns[1][p]], each_move[0], each_move[1])
+                            board_p[each_move[0], each_move[1]] = board_p[all_pawns[0][p], all_pawns[1][p]]
+                            board_p[all_pawns[0][p], all_pawns[1][p]] = 0
+
+                            eval = self.Minimax(board_p, Player_turn *-1, last_move_p, 0)
+                            maxEval_score = max(maxEval_score, eval)
+                            if maxEval_score == eval:
+                                best_move = [(all_pawns[0][p], all_pawns[1][p]), each_move]
 
         return best_move
 
-
+    # def Minimax_helper(self):
 
 
 
