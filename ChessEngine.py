@@ -37,7 +37,7 @@ class GameState():
 
 
     def makeMove(self, start_square, end_square):
-        print(self.player2.play(self.board, self.last_move))
+        # print(self.player2.play(self.board, self.last_move))
         flag = 0
         flag = self.player1.play(self.board, start_square, end_square, self.Player_turn, self.last_move)
 
