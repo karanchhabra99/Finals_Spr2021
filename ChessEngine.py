@@ -488,20 +488,9 @@ class HumanPlayer():
         return self.move.check_piece_and_play(board, current_location, next_location, Player_turn, last_move)
 
 ''''
-Modification:
-Original
 Modfying a Heuristic score map: Karan 
 
-AI:
-Get all the possible move for each piece: Karan
-- Pawn - self.dim
-, Knight - self.dim
-, King - self.dim
-, Bishop
-, Queen
-, Rook
 
-For each possible we need check what will be the game board score as we go deep: Zhiyan
 And calculate the heursitic score for the bottom-up: Zhiyan 
 [for whites turn: 
 Score = whites pieces(including the positions value) - Black pieces(including the positions value)]
@@ -509,7 +498,7 @@ Score = whites pieces(including the positions value) - Black pieces(including th
 Make AI play - Karan
 
 3 piece modifications: Karan
-HUman vs Human
+Human vs Human
 AI vs Human
 AI VS AI
 

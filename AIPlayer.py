@@ -5,7 +5,6 @@ import copy
 
 class AIPlayer():
     def __init__(self, dim, move, Player_turn):
-        ## ToDo: Check if move instance should be created
         self.move = move
         self.dim = dim
         self.dept = 1
@@ -34,7 +33,6 @@ class AIPlayer():
             Score = 999999
 
         #Pawn Best move
-        ## ToDo: Make the output of 2 parameters
         Score, best_move = self.pawn_best_move(board, Player_turn, Score, best_move, last_move, dept)
         # #Knight Best Move
         Score, best_move = self.knight_best_move(board, Player_turn, Score, best_move, dept)
@@ -88,6 +86,8 @@ class AIPlayer():
 
     def queen_best_move(self, board, Player_turn, Score, best_move, dept):
         all_queen = np.where(board == 9 * Player_turn)
+
+        ## ToDo: debug
         for p in range(len(all_queen[0])):
             all_queen_moves = self.move.queen.rook.straight_moves(board, (all_queen[0][p], all_queen[1][p]), Player_turn) + self.move.queen.bishop.diagonal_moves(board, (all_queen[0][p], all_queen[1][p]), Player_turn)
 
