@@ -8,7 +8,7 @@ class AIPlayer():
         ## ToDo: Check if move instance should be created
         self.move = move
         self.dim = dim
-        self.dept = 3
+        self.dept = 2
         self.Player_turn = Player_turn
 
         ## ToDo: After board_score is set-up
@@ -38,8 +38,14 @@ class AIPlayer():
         # pawn_best_score, pawn_best_move = self.pawn_best_move(board, Player_turn, Score, best_move, last_move, dept)
         #Knight Best Move
         Score, best_move = self.knight_best_move(board, Player_turn, Score, best_move, dept)
-        ## Bishop Best Move
+        # ## Bishop Best Move
         Score, best_move = self.bishop_best_move(board, Player_turn, Score, best_move, dept)
+        ## Rooks Best Move
+        Score, best_move = self.rook_best_move(board, Player_turn, Score, best_move, dept)
+        ## Queen Best Move
+        Score, best_move = self.queen_best_move(board, Player_turn, Score, best_move, dept)
+        ## King Best Move
+        Score, best_move = self.king_best_move(board, Player_turn, Score, best_move, dept)
 
         # print(f"minmax {knight_best_move}")
         return Score, best_move
@@ -62,6 +68,42 @@ class AIPlayer():
             if Score == eval:
                 if dept == self.dept:
                     best_move = [(all_pieces[0][p], all_pieces[1][p]), each_move]
+
+        return Score, best_move
+
+    def king_best_move(self, board, Player_turn, Score, best_move, dept):
+        all_king = np.where(board == 1000 * Player_turn)
+
+        all_king_moves = self.move.king.king_moves(board, (all_king[0][0], all_king[1][0]))
+
+        for each_move in all_king_moves:
+            Score, best_move = self.all_moves_helper(board, None, all_king, 0, each_move, Player_turn, dept,
+                                                     best_move,
+                                                     Score)
+
+        return Score, best_move
+
+    def queen_best_move(self, board, Player_turn, Score, best_move, dept):
+        all_queen = np.where(board == 9 * Player_turn)
+        for p in range(len(all_queen[0])):
+            all_queen_moves = self.move.queen.rook.straight_moves(board, (all_queen[0][p], all_queen[1][p]), Player_turn) + self.move.queen.bishop.diagonal_moves(board, (all_queen[0][p], all_queen[1][p]), Player_turn)
+
+            for each_move in all_queen_moves:
+                Score, best_move = self.all_moves_helper(board, None, all_queen, p, each_move, Player_turn, dept,
+                                                         best_move,
+                                                         Score)
+
+        return Score, best_move
+
+    def rook_best_move(self, board, Player_turn, Score, best_move, dept):
+        all_rook = np.where(board == 5 * Player_turn)
+        for p in range(len(all_rook[0])):
+            all_rook_moves = self.move.rook.straight_moves(board, (all_rook[0][p], all_rook[1][p]), Player_turn)
+
+            for each_move in all_rook_moves:
+                Score, best_move = self.all_moves_helper(board, None, all_rook, p, each_move, Player_turn, dept,
+                                                         best_move,
+                                                         Score)
 
         return Score, best_move
 
@@ -189,7 +231,7 @@ class AIPlayer():
     def board_score(self, board):
         ## ToDo:
         self.count+= 1
-        if self.count < 70:
+        if self.count < 1500:
             # print(board)
             # print(self.count)
             return self.count
