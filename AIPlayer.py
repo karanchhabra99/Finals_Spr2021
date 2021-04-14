@@ -8,7 +8,7 @@ class AIPlayer():
         ## ToDo: Check if move instance should be created
         self.move = move
         self.dim = dim
-        self.dept = 4
+        self.dept = 3
         self.Player_turn = Player_turn
 
         ## ToDo: After board_score is set-up
@@ -26,7 +26,7 @@ class AIPlayer():
     ## Reference: https://www.youtube.com/watch?v=l-hh51ncgDI&ab_channel=SebastianLague
     def Minimax(self, board, Player_turn, last_move, dept, best_move = None):
         if (dept == 0) or (len(np.where(board == 1000)) == 0) or (len(np.where(board == -1000)) == 0):
-            return self.board_score(board) , best_move
+            return self.board_score(board), best_move
 
         if self.Player_turn == Player_turn:
             Score = -999999
@@ -37,12 +37,12 @@ class AIPlayer():
         ## ToDo: Make the output of 2 parameters
         # pawn_best_score, pawn_best_move = self.pawn_best_move(board, Player_turn, Score, best_move, last_move, dept)
         #Knight Best Move
-        # knight_best_score, knight_best_move = self.knight_best_move(board, Player_turn, Score, best_move, dept)
+        Score, best_move = self.knight_best_move(board, Player_turn, Score, best_move, dept)
         ## Bishop Best Move
-        bishop_best_score, bishop_best_move = self.bishop_best_move(board, Player_turn, Score, best_move, dept)
+        Score, best_move = self.bishop_best_move(board, Player_turn, Score, best_move, dept)
 
         # print(f"minmax {knight_best_move}")
-        return bishop_best_score, bishop_best_move
+        return Score, best_move
 
     def all_moves_helper(self, board, last_move_all, all_pieces, p, each_move, Player_turn, dept, best_move, Score):
         board_all = copy.deepcopy(board)
@@ -71,13 +71,14 @@ class AIPlayer():
             all_bishop_moves = self.move.bishop.diagonal_moves(board, (all_bishop[0][p], all_bishop[1][p]), Player_turn)
 
             for each_move in all_bishop_moves:
-                Score, best_move =self.all_moves_helper(self, board, None, all_bishop, p, each_move, Player_turn, dept, best_move,
+                Score, best_move =self.all_moves_helper(board, None, all_bishop, p, each_move, Player_turn, dept, best_move,
                                  Score)
 
         return Score, best_move
 
 
     def knight_best_move(self, board, Player_turn, Score, best_move, dept):
+        ## ToDo: Reduce Redandancy
         all_knight = np.where(board == 3 * Player_turn)
         for p in range(len(all_knight[0])):
 
@@ -188,7 +189,7 @@ class AIPlayer():
     def board_score(self, board):
         ## ToDo:
         self.count+= 1
-        if self.count < 8:
+        if self.count < 70:
             # print(board)
             # print(self.count)
             return self.count
