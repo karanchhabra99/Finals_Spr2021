@@ -55,7 +55,7 @@ class GameState():
                 print(E)
                 self.makeMove(S, E)
 
-                time.sleep(1)
+                time.sleep(0.5)
             # else:
                 self.Player_turn = 1
                 print("\n\nWhites Turn")
@@ -505,6 +505,11 @@ And calculate the heursitic score for the bottom-up: Zhiyan
 [for whites turn: 
 Score = whites pieces(including the positions value) - Black pieces(including the positions value)]
 
-3 piece modifications: Karan
 Make AI play - Karan
+
+3 piece modifications: Karan
+HUman vs Human
+AI vs Human
+AI VS AI
+
 '''
