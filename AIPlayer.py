@@ -7,11 +7,11 @@ class AIPlayer():
     def __init__(self, dim, move, Player_turn):
         self.move = move
         self.dim = dim
-        self.dept = 1
+        self.dept = 3
         self.Player_turn = Player_turn
 
-        ## ToDo: After board_score is set-up
-        self.count = 1
+        self.pawn_heuristic, self.knight_heuristic, self.bishop_heuristic, self.rook_heuristic, self.queen_heuristic = self.heuristic_dim_player()
+
 
     def play(self, board, last_move):
         _, cur = self.Minimax(board, self.Player_turn, last_move, self.dept)
@@ -74,13 +74,13 @@ class AIPlayer():
 
     def king_best_move(self, board, Player_turn, Score, best_move, dept):
         all_king = np.where(board == 1000 * Player_turn)
+        if len(all_king[0]) !=0:
+            all_king_moves = self.move.king.king_moves(board, (all_king[0][0], all_king[1][0]))
 
-        all_king_moves = self.move.king.king_moves(board, (all_king[0][0], all_king[1][0]))
-
-        for each_move in all_king_moves:
-            Score, best_move = self.all_moves_helper(board, None, all_king, 0, each_move, Player_turn, dept,
-                                                     best_move,
-                                                     Score)
+            for each_move in all_king_moves:
+                Score, best_move = self.all_moves_helper(board, None, all_king, 0, each_move, Player_turn, dept,
+                                                         best_move,
+                                                         Score)
 
         return Score, best_move
 
@@ -166,13 +166,134 @@ class AIPlayer():
                                                  Score)
         return Score, best_move
 
-    def board_score(self, board):
-        ## ToDo:
-        self.count+= 1
-        if self.count < 1500:
-            # print(board)
-            # print(self.count)
-            return self.count
+    def board_score_helper(self, board, Player_turn):
+        Score = 0
+        ## Getting all pawn of maximizing player
+        all_pawns = np.where(board == 1 * Player_turn)
+        for i in range(len(all_pawns[0])):
+            Score += self.pawn_heuristic[all_pawns[0][i], all_pawns[1][i]]
 
-        else:
-            return -self.count
+        ## All Knight
+        all_knight = np.where(board == 3 * Player_turn)
+        for i in range(len(all_knight[0])):
+            Score += 3 * self.knight_heuristic[all_knight[0][i], all_knight[1][i]]
+            ## ToDo: If modified +4
+
+        ## All Bishop
+        all_bishop = np.where(board == 2 * Player_turn)
+        for i in range(len(all_bishop[0])):
+            Score += 3 * self.bishop_heuristic[all_bishop[0][i], all_bishop[1][i]]
+
+        ## All Rook
+        all_rook = np.where(board == 5 * Player_turn)
+        for i in range(len(all_rook[0])):
+            Score += 5 * self.rook_heuristic[all_rook[0][i], all_rook[1][i]]
+
+        ## All Queen
+        all_queen = np.where(board == 9 * Player_turn)
+        for i in range(len(all_queen[0])):
+            Score += 6 * self.rook_heuristic[all_queen[0][i], all_queen[1][i]]
+
+        return Score
+
+    def board_score(self, board):
+        if len(np.where(board == 1000)[0]) ==0:
+            if self.Player_turn == 1:
+                return -100000
+            else:
+                return 100000
+        if len(np.where(board == -1000)[0]) ==0:
+            if self.Player_turn == -1:
+                return -100000
+            else:
+                return 100000
+
+        maximizing_player_score = self.board_score_helper(board, self.Player_turn)
+        minimizing_player_score = self.board_score_helper(board, self.Player_turn * -1)
+
+        return maximizing_player_score - minimizing_player_score
+
+
+    def remove_middle_col(self, arr):
+        return arr[:, [0, 1, 2, 3, 5, 6, 7]]
+
+    def remove_both_side_col(self,arr):
+        return arr[:, 1:-1]
+
+    def heuristic_dim_player(self):
+        pawn, knight, bishop, rook, queen = self.heuristic()
+        if self.dim%2 == 1:
+            pawn = self.remove_middle_col(pawn)
+            knight = self.remove_middle_col(knight)
+            bishop = self.remove_middle_col(bishop)
+            rook = self.remove_middle_col(rook)
+            queen = self.remove_middle_col(queen)
+
+        if self.dim <=6:
+            pawn = self.remove_both_side_col(pawn)
+            knight = self.remove_both_side_col(knight)
+            bishop = self.remove_both_side_col(bishop)
+            rook = self.remove_both_side_col(rook)
+            queen = self.remove_both_side_col(queen)
+
+        if self.Player_turn == -1:
+            pawn = np.flipud(pawn)
+            knight = np.flipud(knight)
+            bishop = np.flipud(bishop)
+            rook = np.flipud(rook)
+            queen = np.flipud(queen)
+
+        return pawn, knight, bishop, rook, queen
+
+
+    def heuristic(self):
+        pawn = np.array([[100, 100, 100, 100, 100, 100, 100, 100],
+                         [7,7,7,8,8,7,7,7],
+                         [6,6,6,7,7,6,6,6],
+                         [5,5,5,6,6,5,5,5],
+                         [4,4,4,5,5,4,4,4],
+                         [2,2,2,2,2,2,2,2],
+                         [1, 1, 1, 1, 1, 1, 1, 1],
+                         [0,0,0,0,0,0,0,0]])
+
+        knight = np.array([[8,8,8,8,8,8,8,8],
+                          [8,8,8,8,8,8,8,8],
+                         [6,6,6,7,7,6,6,6],
+                         [5,5,5,6,6,5,5,5],
+                         [4,4,4,5,5,4,4,4],
+                         [2,2,2,2,2,2,2,2],
+                         [1, 1, 1, 1, 1, 1, 1, 1],
+                         [1, 1, 1, 1, 1, 1, 1, 1]])
+
+        bishop = np.array([[4,4,4,5,5,4,4,4],
+                         [4,4,4,5,5,4,4,4],
+                         [4,4,4,5,5,4,4,4],
+                         [5,5,5,6,6,5,5,5],
+                         [4,4,4,5,5,4,4,4],
+                         [2,2,2,2,2,2,2,2],
+                           [1, 1, 1, 1, 1, 1, 1, 1],
+                           [1, 1, 1, 1, 1, 1, 1, 1]])
+
+        rook = np.array([
+            [8, 8, 8, 8, 8, 8, 8, 8],
+            [8, 8, 8, 8, 8, 8, 8, 8],
+            [5, 5, 5, 6, 6, 5, 5, 5],
+            [5, 5, 5, 6, 6, 5, 5, 5],
+            [5, 5, 5, 6, 6, 5, 5, 5],
+            [2, 2, 2, 2, 2, 2, 2, 2],
+            [2, 2, 2, 2, 2, 2, 2, 2],
+            [1, 1, 1, 1, 1, 1, 1, 1]
+        ])
+
+        queen = np.array([
+            [8, 8, 8, 8, 8, 8, 8, 8],
+            [8, 8, 8, 8, 8, 8, 8, 8],
+            [5, 5, 5, 6, 6, 5, 5, 5],
+            [5, 5, 5, 6, 6, 5, 5, 5],
+            [5, 5, 5, 6, 6, 5, 5, 5],
+            [2, 2, 2, 4, 4, 2, 2, 2],
+            [2, 2, 2, 3, 3, 2, 2, 2],
+            [1, 1, 1, 1, 1, 1, 1, 1]
+        ])
+
+        return pawn, knight, bishop, rook, queen
