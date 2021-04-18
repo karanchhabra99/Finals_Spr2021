@@ -49,7 +49,7 @@ class AIPlayer():
         # print(f"minmax {knight_best_move}")
         return Score, best_move
 
-    def all_moves_helper(self, board, last_move_all, all_pieces, p, each_move, Player_turn, dept, best_move, Score, Queen = False):
+    def all_moves_helper(self, board, last_move_all, all_pieces, p, each_move, Player_turn, dept, best_move, Score, Queen = False, rook =False):
         board_all = copy.deepcopy(board)
 
         last_move_all = (board_all[all_pieces[0][p], all_pieces[1][p]], each_move[0], each_move[1])
@@ -58,6 +58,10 @@ class AIPlayer():
         else:
             board_all[each_move[0], each_move[1]] = board_all[all_pieces[0][p], all_pieces[1][p]]
         board_all[all_pieces[0][p], all_pieces[1][p]] = 0
+        ## Rook remove Pawn
+        if rook:
+            if self.modified == 1:
+                self.move.rook.remove_pawns(board_all, (all_pieces[0][p], all_pieces[1][p]), (each_move[0], each_move[1]))
 
         eval, best_move = self.Minimax(board_all, Player_turn * -1, last_move_all, dept - 1, best_move)
 
@@ -105,7 +109,7 @@ class AIPlayer():
             for each_move in all_rook_moves:
                 Score, best_move = self.all_moves_helper(board, None, all_rook, p, each_move, Player_turn, dept,
                                                          best_move,
-                                                         Score)
+                                                         Score, False, True)
 
         return Score, best_move
 
@@ -178,7 +182,6 @@ class AIPlayer():
             Score += (2 * self.knight_heuristic[all_knight[0][i], all_knight[1][i]]) +10
             if self.modified == 1:
                 Score += 4
-            ## ToDo: If modified +4
 
         ## All Bishop
         all_bishop = np.where(board == 2 * Player_turn)
@@ -191,6 +194,8 @@ class AIPlayer():
         all_rook = np.where(board == 5 * Player_turn)
         for i in range(len(all_rook[0])):
             Score += (3 * self.rook_heuristic[all_rook[0][i], all_rook[1][i]]) + 50
+            if self.modified == 1:
+                Score += 4
 
         ## All Queen
         all_queen = np.where(board == 9 * Player_turn)

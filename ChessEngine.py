@@ -16,6 +16,7 @@ class GameState():
         self.Player_turn = 1
         self.last_move = None
         self.game_type = game_type
+        self.modified = modified
 
         self.game_over = False
 
@@ -29,10 +30,6 @@ class GameState():
             self.player1 = AIPlayer(self.dim, self.move, 1, modified)
             self.player2 = AIPlayer(self.dim, self.move, -1, modified)
 
-            # while not self.game_over:
-            #     time.sleep(1)
-            #     self.AIvsAI()
-            #     print(self.board)
 
     def get_board(self):
         board = np.array([
@@ -53,7 +50,7 @@ class GameState():
         if self.Player_turn == 1:
             start_square, end_square = self.player1.play(self.board, self.last_move)
             print(f"White Played: {start_square}, {end_square}")
-            # self.Player_turn = -1
+
 
         elif self.Player_turn == -1:
             start_square, end_square = self.player2.play(self.board, self.last_move)
@@ -83,9 +80,17 @@ class GameState():
 
         ## Makes the move
         if flag == 1:
+            if self.game_type != 1:
+                if self.modified == 1:
+                    if abs(self.board[start_square[0], start_square[1]]) == 5:
+                        self.move.rook.remove_pawns(self.board, (start_square[0], start_square[1]), (end_square[0], end_square[1]))
+                if abs(self.board[start_square[0], start_square[1]]) == 1:
+                    if (start_square[0] == 0) or (start_square[0] == 7):
+                        self.board[start_square[0], start_square[1]] = 9 * self.Player_turn
             self.last_move = (self.board[start_square[0], start_square[1]], end_square[0], end_square[1])
             self.board[end_square[0], end_square[1]] = self.board[start_square[0], start_square[1]]
             self.board[start_square[0], start_square[1]] = 0
+
 
             ### Game Over
             if len(np.where(abs(self.board) == 1000)[0]) == 1:
@@ -103,13 +108,10 @@ class GameState():
                     print('\n\nBlacks Turn')
                     if self.game_type == 2:
                         S, E = self.player2.play(self.board, self.last_move)
-                        # print(S)
-                        # print(E)
                         self.makeMove(S, E)
                         self.Player_turn = 1
 
-                # time.sleep(0.5)
-            elif self.game_type != 1:
+            elif self.game_type != 2:
                 if not self.game_over:
                     self.Player_turn = 1
                     print("\n\nWhites Turn")
@@ -127,7 +129,6 @@ class Pawn():
             check = self.is_possible_pawn(board, current_location, next_location, last_move)
             if check[0]:
                 flag = 1
-                ##ToDo:
                 if (next_location[0] == 0):
                     new_piece = input("Q or R or K or B: ")
                     if new_piece.lower() == "q":
@@ -366,13 +367,36 @@ class Rook:
     def __init__(self, dim, modified):
         self.dim = dim
         self.Player_turn = 1
+        self.modified = modified
 
     def rook_move_checker(self, board, current_location, next_location, Player_turn):
         self.Player_turn = Player_turn
         if next_location in self.straight_moves(board, current_location, Player_turn):
-
+            if self.modified == 1:
+                self.remove_pawns(board, current_location, next_location)
             return 1
         return 0
+
+
+    def remove_pawns(self, board, current_location, next_location):
+        if current_location[0] == next_location[0]:
+            if current_location[1] < next_location[1]:
+                for i in range(current_location[1]+1, next_location[1]):
+                    board[current_location[0], i] = 0
+            else:
+                for i in range(current_location[1]-1, next_location[1], -1):
+                    board[current_location[0], i] = 0
+
+        else:
+            if current_location[0] < next_location[0]:
+                for i in range(current_location[0]+1, next_location[0]):
+                    board[i, current_location[1]] = 0
+            else:
+                for i in range(current_location[0]-1, next_location[0], -1):
+                    board[i, current_location[1]] = 0
+
+        return
+
 
     def straight_moves(self, board, current_location, Player_turn):
         self.Player_turn = Player_turn
@@ -399,17 +423,29 @@ class Rook:
         elif board[i, current_location[1]] < 0:
             if self.Player_turn == 1:
                 all_moves.append((i, current_location[1]))
-            if direction == 'forward':
-                i = 8
-            else:
-                i = 0
+                if self.modified == 1:
+                    if direction == 'forward':
+                        i = 8
+                    else:
+                        i = 0
+            if self.modified != 1:
+                if direction == 'forward':
+                    i = 8
+                else:
+                    i = 0
         elif board[i, current_location[1]] > 0:
             if self.Player_turn == -1:
                 all_moves.append((i, current_location[1]))
-            if direction == 'forward':
-                i = 8
-            else:
-                i = 0
+                if self.modified ==1:
+                    if direction == 'forward':
+                        i = 8
+                    else:
+                        i = 0
+            if self.modified !=1:
+                if direction == 'forward':
+                    i = 8
+                else:
+                    i = 0
         else:
             i = 8
         if direction == 'forward':
@@ -424,17 +460,29 @@ class Rook:
         elif board[current_location[0], i] < 0:
             if self.Player_turn == 1:
                 all_moves.append((current_location[0], i))
-            if direction == 'forward':
-                i = 8
-            else:
-                i = 0
+                if self.modified == 1:
+                    if direction == 'forward':
+                        i = 8
+                    else:
+                        i = 0
+            if self.modified != 1:
+                if direction == 'forward':
+                    i = 8
+                else:
+                    i = 0
         elif board[current_location[0], i] > 0:
             if self.Player_turn == -1:
                 all_moves.append((current_location[0], i))
-            if direction == 'forward':
-                i = 8
-            else:
-                i = 0
+                if self.modified == 1:
+                    if direction == 'forward':
+                        i = 8
+                    else:
+                        i = 0
+            if self.modified != 1:
+                if direction == 'forward':
+                    i = 8
+                else:
+                    i = 0
         else:
             i = 8
         if direction == 'forward':
@@ -444,11 +492,11 @@ class Rook:
         return i
 
 class Queen():
-    def __init__(self, dim, modified):
+    def __init__(self, dim):
         self.dim = dim
         self.Player_turn = 1
-        self.bishop = Bishop(dim,modified)
-        self.rook = Rook(dim, modified)
+        self.bishop = Bishop(dim,0)
+        self.rook = Rook(dim, 0)
 
     def queen_move_checker(self, board, current_location, next_location, Player_turn):
         self.Player_turn = Player_turn
@@ -520,7 +568,7 @@ class Move():
         self.knight = Knight(dim, modified)
         self.bishop = Bishop(dim, modified)
         self.rook = Rook(dim, modified)
-        self.queen = Queen(dim, modified)
+        self.queen = Queen(dim)
         self.king = King(dim)
         self.dim = dim
         self.Player_turn = 1
