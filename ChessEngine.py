@@ -10,12 +10,12 @@ import time
 
 class GameState():
     def __init__(self, dim, game_type, modified):
-        self.move = Move(dim)
+        self.move = Move(dim, modified)
         self.dim = dim
         self.board = self.get_board()
         self.Player_turn = 1
         self.last_move = None
-        self.game_type, self.modified = game_type, modified
+        self.game_type = game_type
 
         self.game_over = False
 
@@ -24,10 +24,10 @@ class GameState():
             self.player2 = HumanPlayer(self.dim, self.move)
         elif self.game_type == 2:
             self.player1 = HumanPlayer(self.dim, self.move)
-            self.player2 = AIPlayer(self.dim, self.move, -1)
+            self.player2 = AIPlayer(self.dim, self.move, -1, modified)
         else:
-            self.player1 = AIPlayer(self.dim, self.move, 1)
-            self.player2 = AIPlayer(self.dim, self.move, -1)
+            self.player1 = AIPlayer(self.dim, self.move, 1, modified)
+            self.player2 = AIPlayer(self.dim, self.move, -1, modified)
 
             # while not self.game_over:
             #     time.sleep(1)
@@ -234,9 +234,10 @@ class Pawn():
         return (False, 0)
 
 class Knight():
-    def __init__(self, dim):
+    def __init__(self, dim, modified):
         self.dim = dim
         self.Player_turn = 1
+        self.modified = modified
 
     def knight_move_checker(self, board, current_location, next_location, Player_turn):
         self.Player_turn =Player_turn
@@ -256,32 +257,37 @@ class Knight():
 
     def all_move_knight_helper(self, start_square):
         result = []
+        if self.modified == 1:
+            jump = 3
+        else:
+            jump = 2
         if start_square[0] + 1 < 8:
-            if start_square[1] + 2 < self.dim:
-                result.append((start_square[0] + 1, start_square[1] + 2))
-            if start_square[1] - 2 >= 0:
-                result.append((start_square[0] + 1, start_square[1] - 2))
+            if start_square[1] + jump < self.dim:
+                result.append((start_square[0] + 1, start_square[1] + jump))
+            if start_square[1] - jump >= 0:
+                result.append((start_square[0] + 1, start_square[1] - jump))
         if start_square[0] - 1 >= 0:
-            if start_square[1] + 2 < self.dim:
-                result.append((start_square[0] - 1, start_square[1] + 2))
-            if start_square[1] - 2 >= 0:
-                result.append((start_square[0] - 1, start_square[1] - 2))
-        if start_square[0] + 2 < 8:
+            if start_square[1] + jump < self.dim:
+                result.append((start_square[0] - 1, start_square[1] + jump))
+            if start_square[1] - jump >= 0:
+                result.append((start_square[0] - 1, start_square[1] - jump))
+        if start_square[0] + jump < 8:
             if start_square[1] + 1 < self.dim:
-                result.append((start_square[0] + 2, start_square[1] + 1))
+                result.append((start_square[0] + jump, start_square[1] + 1))
             if start_square[1] - 1 >= 0:
-                result.append((start_square[0] + 2, start_square[1] - 1))
-        if start_square[0] - 2 >= 0:
+                result.append((start_square[0] + jump, start_square[1] - 1))
+        if start_square[0] - jump >= 0:
             if start_square[1] + 1 < self.dim:
-                result.append((start_square[0] - 2, start_square[1] + 1))
+                result.append((start_square[0] - jump, start_square[1] + 1))
             if start_square[1] - 1 >= 0:
-                result.append((start_square[0] - 2, start_square[1] - 1))
+                result.append((start_square[0] - jump, start_square[1] - 1))
         return result
 
 class Bishop():
-    def __init__(self, dim):
+    def __init__(self, dim, modified):
         self.dim = dim
         self.Player_turn = 1
+        self.modified = modified
 
     ## go through
     def bishop_move_checker(self, board, current_location, next_location, Player_turn):
@@ -323,20 +329,33 @@ class Bishop():
         elif board[i, col] < 0:
             if self.Player_turn == 1:
                 all_moves.append((i, col))
-
-            ## Intend the below logic to make the bishop jump accross his pieces
-            if direction == 'forward':
-                col = self.dim
-            else:
-                col = 0
+                if self.modified == 1:
+                    if direction == 'forward':
+                        col = self.dim
+                    else:
+                        col = 0
+            if self.modified !=1:
+                ## Intend the below logic to make the bishop jump accross his pieces
+                if direction == 'forward':
+                    col = self.dim
+                else:
+                    col = 0
         elif board[i, col] > 0:
             if self.Player_turn == -1:
                 all_moves.append((i, col))
-            ## Intend the below logic to make the bishop jump accross his pieces
-            if direction == 'forward':
-                col = self.dim
-            else:
-                col = 0
+                if self.modified == 1:
+                    ## Intend the below logic to make the bishop jump accross his pieces
+                    if direction == 'forward':
+                        col = self.dim
+                    else:
+                        col = 0
+
+            if self.modified !=1:
+                ## Intend the below logic to make the bishop jump accross his pieces
+                if direction == 'forward':
+                    col = self.dim
+                else:
+                    col = 0
         else:
             col = self.dim
 
@@ -344,13 +363,14 @@ class Bishop():
 
 
 class Rook:
-    def __init__(self, dim):
+    def __init__(self, dim, modified):
         self.dim = dim
         self.Player_turn = 1
 
     def rook_move_checker(self, board, current_location, next_location, Player_turn):
         self.Player_turn = Player_turn
         if next_location in self.straight_moves(board, current_location, Player_turn):
+
             return 1
         return 0
 
@@ -424,11 +444,11 @@ class Rook:
         return i
 
 class Queen():
-    def __init__(self, dim):
+    def __init__(self, dim, modified):
         self.dim = dim
         self.Player_turn = 1
-        self.bishop = Bishop(dim)
-        self.rook = Rook(dim)
+        self.bishop = Bishop(dim,modified)
+        self.rook = Rook(dim, modified)
 
     def queen_move_checker(self, board, current_location, next_location, Player_turn):
         self.Player_turn = Player_turn
@@ -493,14 +513,14 @@ class King():
 
 
 class Move():
-    def __init__(self, dim):
+    def __init__(self, dim, modified):
         # self.king_first_move = False
         # self.rook_first_move = {}
         self.pawn = Pawn(dim)
-        self.knight = Knight(dim)
-        self.bishop = Bishop(dim)
-        self.rook = Rook(dim)
-        self.queen = Queen(dim)
+        self.knight = Knight(dim, modified)
+        self.bishop = Bishop(dim, modified)
+        self.rook = Rook(dim, modified)
+        self.queen = Queen(dim, modified)
         self.king = King(dim)
         self.dim = dim
         self.Player_turn = 1

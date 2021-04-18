@@ -5,12 +5,12 @@ import time
 # from ChessEngine import Move, Pawn, Knight, Bishop, Rook, Queen, King
 
 class AIPlayer():
-    def __init__(self, dim, move, Player_turn):
+    def __init__(self, dim, move, Player_turn, modified):
         self.move = move
         self.dim = dim
         self.dept = 3
         self.Player_turn = Player_turn
-
+        self.modified = modified
         self.pawn_heuristic, self.knight_heuristic, self.bishop_heuristic, self.rook_heuristic, self.queen_heuristic = self.heuristic_dim_player()
 
 
@@ -87,8 +87,6 @@ class AIPlayer():
 
     def queen_best_move(self, board, Player_turn, Score, best_move, dept):
         all_queen = np.where(board == 9 * Player_turn)
-
-        ## ToDo: debug
         for p in range(len(all_queen[0])):
             all_queen_moves = self.move.queen.rook.straight_moves(board, (all_queen[0][p], all_queen[1][p]), Player_turn) + self.move.queen.bishop.diagonal_moves(board, (all_queen[0][p], all_queen[1][p]), Player_turn)
 
@@ -172,18 +170,22 @@ class AIPlayer():
         ## Getting all pawn of maximizing player
         all_pawns = np.where(board == 1 * Player_turn)
         for i in range(len(all_pawns[0])):
-            Score += self.pawn_heuristic[all_pawns[0][i], all_pawns[1][i]] + 5
+            Score += self.pawn_heuristic[all_pawns[0][i], all_pawns[1][i]] + 2
 
         ## All Knight
         all_knight = np.where(board == 3 * Player_turn)
         for i in range(len(all_knight[0])):
             Score += (2 * self.knight_heuristic[all_knight[0][i], all_knight[1][i]]) +10
+            if self.modified == 1:
+                Score += 4
             ## ToDo: If modified +4
 
         ## All Bishop
         all_bishop = np.where(board == 2 * Player_turn)
         for i in range(len(all_bishop[0])):
             Score += (2 * self.bishop_heuristic[all_bishop[0][i], all_bishop[1][i]]) + 10
+            if self.modified == 1:
+                Score += 4
 
         ## All Rook
         all_rook = np.where(board == 5 * Player_turn)
@@ -193,7 +195,7 @@ class AIPlayer():
         ## All Queen
         all_queen = np.where(board == 9 * Player_turn)
         for i in range(len(all_queen[0])):
-            Score += (4 * self.rook_heuristic[all_queen[0][i], all_queen[1][i]]) + 90
+            Score += (4 * self.rook_heuristic[all_queen[0][i], all_queen[1][i]]) + 100
 
         return Score
 
@@ -289,11 +291,11 @@ class AIPlayer():
         ])
 
         queen = np.array([
-            [8, 8, 8, 8, 8, 8, 8, 8],
-            [8, 8, 8, 8, 8, 8, 8, 8],
             [5, 5, 5, 6, 6, 5, 5, 5],
             [5, 5, 5, 6, 6, 5, 5, 5],
-            [5, 5, 5, 6, 6, 5, 5, 5],
+            [5, 5, 5, 9, 9, 5, 5, 5],
+            [5, 5, 5, 10, 10, 5, 5, 5],
+            [5, 5, 5, 10, 10, 5, 5, 5],
             [2, 2, 2, 4, 4, 2, 2, 2],
             [2, 2, 2, 3, 3, 2, 2, 2],
             [1, 1, 1, 1, 1, 1, 1, 1]
