@@ -52,26 +52,29 @@ def main(game_type, modified):
                 running = False
                 p.quit()
             elif e.type == p.MOUSEBUTTONDOWN:
-                location = p.mouse.get_pos() #(x, y) location of the mouse
-                col = location[0] // SQUARE_SIZE
-                row = location[1] // SQUARE_SIZE
-                if square_selected == (row, col): #user clicked the same square twice
-                    square_selected = () #deselect
-                    player_clicks = [] #clear clicks
+                if game_type ==3:
+                    game_state.makeMove((0,0), (0,0))
                 else:
-                    square_selected = (row, col)
-                    player_clicks.append(square_selected) #append for both 1st and 2nd click
-                if len(player_clicks) == 2: #after 2nd click
-                    # move = game_state.gui_move(, game_state.board)
-                    # print(move.getChessNotation())
-                    # print(move.piece_moved)
-                    game_state.makeMove(player_clicks[0], player_clicks[1])
-                    square_selected = () #reset user clicks
-                    player_clicks = []
-                elif  len(player_clicks) == 1:
-                    print('Piece Selected')
-                else:
-                    print('Nothing is selected')
+                    location = p.mouse.get_pos() #(x, y) location of the mouse
+                    col = location[0] // SQUARE_SIZE
+                    row = location[1] // SQUARE_SIZE
+                    if square_selected == (row, col): #user clicked the same square twice
+                        square_selected = () #deselect
+                        player_clicks = [] #clear clicks
+                    else:
+                        square_selected = (row, col)
+                        player_clicks.append(square_selected) #append for both 1st and 2nd click
+                    if len(player_clicks) == 2: #after 2nd click
+                        # move = game_state.gui_move(, game_state.board)
+                        # print(move.getChessNotation())
+                        # print(move.piece_moved)
+                        game_state.makeMove(player_clicks[0], player_clicks[1])
+                        square_selected = () #reset user clicks
+                        player_clicks = []
+                    elif  len(player_clicks) == 1:
+                        print('Piece Selected')
+                    else:
+                        print('Nothing is selected')
 
         drawGameState(screen, game_state) 
         clock.tick(MAX_FPS)
@@ -110,7 +113,7 @@ def drawPieces(screen, board):
          
                 
 if __name__ == "__main__":
-    DIMENSION = int(input("Enter the Board width: "))
+    DIMENSION = int(input("Enter the Board width (5-8): "))
     while ((DIMENSION < 5) and (DIMENSION > 8)):
         DIMENSION = int(input("Enter the Board width: "))
 

@@ -52,12 +52,12 @@ class GameState():
     def AIvsAI(self):
         if self.Player_turn == 1:
             start_square, end_square = self.player1.play(self.board, self.last_move)
-            print(f"\n\nWhite Played: {start_square}, {end_square}")
+            print(f"White Played: {start_square}, {end_square}")
             # self.Player_turn = -1
 
         elif self.Player_turn == -1:
             start_square, end_square = self.player2.play(self.board, self.last_move)
-            print(f"\n\nBlack Played: {start_square}, {end_square}")
+            print(f"Black Played: {start_square}, {end_square}")
 
         return start_square, end_square
 
@@ -66,6 +66,7 @@ class GameState():
         if self.game_type == 3:
             start_square, end_square = self.AIvsAI()
             flag = 1
+
         if not self.game_over:
             if self.game_type == 1:
                 # Change Player turns and Check if move is valid
@@ -547,11 +548,6 @@ class HumanPlayer():
 ''''
 Big-O
 
-Make AI play - Karan
-
 3 piece modifications: Karan
-Human vs Human
-AI vs Human
-AI VS AI
 
 '''
