@@ -34,12 +34,12 @@ def loadImages():
 The main driver for our code.
 This will handle user input and updating the graphics.
 '''
-def main():
+def main(game_type, modified):
     p.init()
     screen = p.display.set_mode((WIDTH, HEIGHT))
     clock = p.time.Clock()
     screen.fill(p.Color("white"))
-    game_state = ChessEngine.GameState(DIMENSION)
+    game_state = ChessEngine.GameState(DIMENSION, game_type, modified)
     loadImages() #do this only once before while loop
     
     running = True
@@ -110,10 +110,11 @@ def drawPieces(screen, board):
          
                 
 if __name__ == "__main__":
-    ## ToDO: Uncomment below and comment Dim
     DIMENSION = int(input("Enter the Board width: "))
     while ((DIMENSION < 5) and (DIMENSION > 8)):
         DIMENSION = int(input("Enter the Board width: "))
-    # DIMENSION = 8
 
-    main()
+    game_type = int(input("Game type:\n1.Human VS Human\n2.Human VS AI\n3.AI Vs AI\nPlease enter the Game type: "))
+    modified = int(input("Modified or not (1 or 0): "))
+
+    main(game_type, modified)

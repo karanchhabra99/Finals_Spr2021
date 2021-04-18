@@ -9,21 +9,34 @@ import copy
 import time
 
 class GameState():
-    def __init__(self, dim):
+    def __init__(self, dim, game_type, modified):
         self.move = Move(dim)
         self.dim = dim
         self.board = self.get_board()
         self.Player_turn = 1
         self.last_move = None
+        self.game_type, self.modified = game_type, modified
 
-        ## ToDO: AI and Human
-        self.player1 = HumanPlayer(self.dim, self.move)
-        self.player2 = AIPlayer(self.dim, self.move, -1)
+        self.game_over = False
+
+        if self.game_type == 1:
+            self.player1 = HumanPlayer(self.dim, self.move)
+            self.player2 = HumanPlayer(self.dim, self.move)
+        elif self.game_type == 2:
+            self.player1 = HumanPlayer(self.dim, self.move)
+            self.player2 = AIPlayer(self.dim, self.move, -1)
+        else:
+            self.player1 = AIPlayer(self.dim, self.move, 1)
+            self.player2 = AIPlayer(self.dim, self.move, -1)
+
+            while not self.game_over:
+                time.sleep(1)
+                self.AIvsAI()
+                print(self.board)
 
     def get_board(self):
         board = np.array([
             [-5, -3, -2, -9, -1000, -2, -3, -5],
-            # [0, 0, 0, 0, 0, 0, 0, 0],
             [-1, -1, -1, -1, -1, -1, -1, -1],
             [0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],
@@ -36,11 +49,33 @@ class GameState():
 
         return copy.deepcopy(board[:,:self.dim])
 
+    def AIvsAI(self):
+        if self.Player_turn == 1:
+            start_square, end_square = self.player1.play(self.board, self.last_move)
+            print(f"\n\nWhite Played: {start_square}, {end_square}")
+            # self.Player_turn = -1
 
-    def makeMove(self, start_square, end_square):
-        # print(self.player2.play(self.board, self.last_move))
-        flag = 0
-        flag = self.player1.play(self.board, start_square, end_square, self.Player_turn, self.last_move)
+        elif self.Player_turn == -1:
+            start_square, end_square = self.player2.play(self.board, self.last_move)
+            print(f"\n\nBlack Played: {start_square}, {end_square}")
+
+        return self.makeMove(start_square, end_square, 1)
+
+    def makeMove(self, start_square, end_square, flag = 0):
+        # flag = 0
+        if not self.game_over:
+            if self.game_type == 1:
+                # Change Player turns and Check if move is valid
+                if self.Player_turn == 1:
+                    ## Checking if the correct piece is chosen
+                    if self.board[start_square[0], start_square[1]] > 0:
+                        flag = self.player1.play(self.board, start_square, end_square, self.Player_turn, self.last_move)
+                else:
+                    if self.board[start_square[0], start_square[1]] < 0:
+                        flag = self.player2.play(self.board, start_square, end_square, self.Player_turn, self.last_move)
+            elif self.game_type == 2:
+                ## Verified Player 2 moves also in case of Game Type 2
+                flag = self.player1.play(self.board, start_square, end_square, self.Player_turn, self.last_move)
 
         ## Makes the move
         if flag == 1:
@@ -48,18 +83,32 @@ class GameState():
             self.board[end_square[0], end_square[1]] = self.board[start_square[0], start_square[1]]
             self.board[start_square[0], start_square[1]] = 0
 
+            ### Game Over
+            if len(np.where(abs(self.board) == 1000)[0]) == 1:
+                self.game_over = True
+                print("\n\n\nGame Over")
+                if self.Player_turn == 1:
+                    print("White Wins\n\n\n")
+                else:
+                    print("Black Wins\n\n\n")
+
+
             if self.Player_turn == 1:
-                self.Player_turn = -1
-                print('\n\nBlacks Turn')
-                S, E = self.player2.play(self.board, self.last_move)
-                print(S)
-                print(E)
-                self.makeMove(S, E)
+                if not self.game_over:
+                    self.Player_turn = -1
+                    print('\n\nBlacks Turn')
+                    if self.game_type == 2:
+                        S, E = self.player2.play(self.board, self.last_move)
+                        # print(S)
+                        # print(E)
+                        self.makeMove(S, E)
+                        self.Player_turn = 1
 
                 # time.sleep(0.5)
-            # else:
-                self.Player_turn = 1
-                print("\n\nWhites Turn")
+            elif self.game_type != 1:
+                if not self.game_over:
+                    self.Player_turn = 1
+                    print("\n\nWhites Turn")
 
 class Pawn():
     def __init__(self, dim):
@@ -105,7 +154,6 @@ class Pawn():
     def all_move_pawn_helper(self, start_square):
         if start_square[0]- 1 < 0:
             return []
-
         result = [(start_square[0] - 1, start_square[1])]
         if not start_square[0]-2 <= 0:
             result.append((start_square[0] - 2, start_square[1]))
@@ -113,6 +161,7 @@ class Pawn():
             result.append((start_square[0] - 1, start_square[1] - 1))
         if (start_square[1] + 1) < self.dim:
             result.append((start_square[0] - 1, start_square[1] + 1))
+
         return result
 
     def all_AI_black_move_pawn(self, start_square):#, end_square):
@@ -243,7 +292,7 @@ class Bishop():
         all_moves = []
         forward_col = current_location[1]
         backward_col = current_location[1]
-        for i in range(current_location[0]+1, self.dim):
+        for i in range(current_location[0]+1, 8):
             forward_col, backward_col = self.diagonal_moves_helper(board, i, forward_col, backward_col, all_moves)
 
         forward_col = current_location[1]
@@ -493,12 +542,7 @@ class HumanPlayer():
         return self.move.check_piece_and_play(board, current_location, next_location, Player_turn, last_move)
 
 ''''
-Modfying a Heuristic score map: Karan 
-
-
-And calculate the heursitic score for the bottom-up: Zhiyan 
-[for whites turn: 
-Score = whites pieces(including the positions value) - Black pieces(including the positions value)]
+Big-O
 
 Make AI play - Karan
 

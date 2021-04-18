@@ -1,5 +1,6 @@
 import numpy as np
 import copy
+import time
 
 # from ChessEngine import Move, Pawn, Knight, Bishop, Rook, Queen, King
 
@@ -15,7 +16,7 @@ class AIPlayer():
 
     def play(self, board, last_move):
         _, cur = self.Minimax(board, self.Player_turn, last_move, self.dept)
-        print(f"Top: {cur}")
+        # print(f"Top: {cur}")
         current_location, next_location = cur
 
         # _, (current_location, next_location) = self.Minimax(board, self.Player_turn, last_move, self.dept)
@@ -146,16 +147,16 @@ class AIPlayer():
                 all_pawn_moves = self.move.pawn.all_AI_black_move_pawn((all_pawns[0][p], all_pawns[1][p]))
 
             for each_move in all_pawn_moves:
-                if Player_turn == -1:
-                    if (each_move[0] == 7) or (each_move[0] == 0):
-                        ## ToDo: Check move
-                        Score, best_move = self.Minimax_pawn_helper(board, all_pawns, p, each_move,
-                                                                            Score,  Player_turn, best_move, dept,True)
-                    elif self.move.check_piece_and_play(board, (all_pawns[0][p], all_pawns[1][p]), each_move,
-                                                        Player_turn, last_move) == 1:
-                        Score, best_move = self.Minimax_pawn_helper(board, all_pawns, p, each_move,
-                                                                            Score, Player_turn,
-                                                                            best_move, dept)
+                # if Player_turn == -1:
+                if (each_move[0] == 7) or (each_move[0] == 0):
+                    ## ToDo: Check move
+                    Score, best_move = self.Minimax_pawn_helper(board, all_pawns, p, each_move,
+                                                                        Score,  Player_turn, best_move, dept,True)
+                elif self.move.check_piece_and_play(board, (all_pawns[0][p], all_pawns[1][p]), each_move,
+                                                    Player_turn, last_move) == 1:
+                    Score, best_move = self.Minimax_pawn_helper(board, all_pawns, p, each_move,
+                                                                        Score, Player_turn,
+                                                                        best_move, dept)
 
         return Score, best_move
 
@@ -171,28 +172,28 @@ class AIPlayer():
         ## Getting all pawn of maximizing player
         all_pawns = np.where(board == 1 * Player_turn)
         for i in range(len(all_pawns[0])):
-            Score += self.pawn_heuristic[all_pawns[0][i], all_pawns[1][i]]
+            Score += self.pawn_heuristic[all_pawns[0][i], all_pawns[1][i]] + 5
 
         ## All Knight
         all_knight = np.where(board == 3 * Player_turn)
         for i in range(len(all_knight[0])):
-            Score += 3 * self.knight_heuristic[all_knight[0][i], all_knight[1][i]]
+            Score += (2 * self.knight_heuristic[all_knight[0][i], all_knight[1][i]]) +10
             ## ToDo: If modified +4
 
         ## All Bishop
         all_bishop = np.where(board == 2 * Player_turn)
         for i in range(len(all_bishop[0])):
-            Score += 3 * self.bishop_heuristic[all_bishop[0][i], all_bishop[1][i]]
+            Score += (2 * self.bishop_heuristic[all_bishop[0][i], all_bishop[1][i]]) + 10
 
         ## All Rook
         all_rook = np.where(board == 5 * Player_turn)
         for i in range(len(all_rook[0])):
-            Score += 5 * self.rook_heuristic[all_rook[0][i], all_rook[1][i]]
+            Score += (3 * self.rook_heuristic[all_rook[0][i], all_rook[1][i]]) + 50
 
         ## All Queen
         all_queen = np.where(board == 9 * Player_turn)
         for i in range(len(all_queen[0])):
-            Score += 6 * self.rook_heuristic[all_queen[0][i], all_queen[1][i]]
+            Score += (4 * self.rook_heuristic[all_queen[0][i], all_queen[1][i]]) + 90
 
         return Score
 
@@ -247,6 +248,8 @@ class AIPlayer():
 
 
     def heuristic(self):
+        ## Reference: https://github.com/devinalvaro/yachess
+        ## Basic Idea was taken from the above link and then the functions was modified
         pawn = np.array([[100, 100, 100, 100, 100, 100, 100, 100],
                          [7,7,7,8,8,7,7,7],
                          [6,6,6,7,7,6,6,6],
