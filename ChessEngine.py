@@ -29,10 +29,10 @@ class GameState():
             self.player1 = AIPlayer(self.dim, self.move, 1)
             self.player2 = AIPlayer(self.dim, self.move, -1)
 
-            while not self.game_over:
-                time.sleep(1)
-                self.AIvsAI()
-                print(self.board)
+            # while not self.game_over:
+            #     time.sleep(1)
+            #     self.AIvsAI()
+            #     print(self.board)
 
     def get_board(self):
         board = np.array([
@@ -59,10 +59,13 @@ class GameState():
             start_square, end_square = self.player2.play(self.board, self.last_move)
             print(f"\n\nBlack Played: {start_square}, {end_square}")
 
-        return self.makeMove(start_square, end_square, 1)
+        return start_square, end_square
 
-    def makeMove(self, start_square, end_square, flag = 0):
-        # flag = 0
+    def makeMove(self, start_square, end_square):
+        flag = 0
+        if self.game_type == 3:
+            start_square, end_square = self.AIvsAI()
+            flag = 1
         if not self.game_over:
             if self.game_type == 1:
                 # Change Player turns and Check if move is valid
