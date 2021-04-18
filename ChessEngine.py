@@ -56,7 +56,7 @@ class GameState():
                 print(E)
                 self.makeMove(S, E)
 
-                time.sleep(0.5)
+                # time.sleep(0.5)
             # else:
                 self.Player_turn = 1
                 print("\n\nWhites Turn")
@@ -103,6 +103,9 @@ class Pawn():
 
 
     def all_move_pawn_helper(self, start_square):
+        if start_square[0]- 1 < 0:
+            return []
+
         result = [(start_square[0] - 1, start_square[1])]
         if not start_square[0]-2 <= 0:
             result.append((start_square[0] - 2, start_square[1]))
@@ -113,9 +116,11 @@ class Pawn():
         return result
 
     def all_AI_black_move_pawn(self, start_square):#, end_square):
-        ## ToDo:verify this when implementing getting all moves
+        if start_square[0]+1 >= 8:
+            return []
+
         result = [(start_square[0]+ 1, start_square[1])]
-        if not start_square[0]+2 >= 8:
+        if not start_square[0]+2 >= 7:
             result.append((start_square[0]+2, start_square[1]))
         if not (start_square[1]-1) < 0:
             result.append((start_square[0]+1, start_square[1]-1))
