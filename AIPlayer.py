@@ -8,7 +8,7 @@ class AIPlayer():
     def __init__(self, dim, move, Player_turn, modified):
         self.move = move
         self.dim = dim
-        self.dept = 3
+        self.dept = 2
         self.Player_turn = Player_turn
         self.modified = modified
         self.pawn_heuristic, self.knight_heuristic, self.bishop_heuristic, self.rook_heuristic, self.queen_heuristic = self.heuristic_dim_player()

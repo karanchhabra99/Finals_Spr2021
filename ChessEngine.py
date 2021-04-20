@@ -109,6 +109,7 @@ class GameState():
                     if self.game_type == 2:
                         S, E = self.player2.play(self.board, self.last_move)
                         self.makeMove(S, E)
+                        print("\n\nWhites Turn")
                         self.Player_turn = 1
 
             elif self.game_type != 2:
