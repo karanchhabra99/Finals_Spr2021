@@ -2,7 +2,7 @@
 Team Members:
 - Karan Chhabra (karanc2)
 
-Previous Work relating to this game is done in the below repository:
+Previous Work relating to this game was done in the below repository:
 https://github.com/karanchhabra99/Chess.git
 
 Reference:<br>

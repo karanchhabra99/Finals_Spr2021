@@ -205,16 +205,17 @@ class AIPlayer():
         return Score
 
     def board_score(self, board):
-        if len(np.where(board == 1000)[0]) ==0:
-            if self.Player_turn == 1:
-                return -100000
+        if len(np.where(abs(board) == 1000)[0]) !=2:
+            if self.Player_turn*-1 == 1:
+                if len(np.where(board == -1000)[0]) == 0:
+                    return -100000
+                else:
+                    return 100000
             else:
-                return 100000
-        if len(np.where(board == -1000)[0]) ==0:
-            if self.Player_turn == -1:
-                return -100000
-            else:
-                return 100000
+                if len(np.where(board == 1000)[0]) == 0:
+                    return 100000
+                else:
+                    return -100000
 
         maximizing_player_score = self.board_score_helper(board, self.Player_turn)
         minimizing_player_score = self.board_score_helper(board, self.Player_turn * -1)
