@@ -33,8 +33,6 @@ class AIPlayer():
         else:
             Score = 999999
 
-        #Pawn Best move
-        Score, best_move = self.pawn_best_move(board, Player_turn, Score, best_move, last_move, dept)
         # #Knight Best Move
         Score, best_move = self.knight_best_move(board, Player_turn, Score, best_move, dept)
         # # ## Bishop Best Move
@@ -45,6 +43,8 @@ class AIPlayer():
         Score, best_move = self.queen_best_move(board, Player_turn, Score, best_move, dept)
         # ## King Best Move
         Score, best_move = self.king_best_move(board, Player_turn, Score, best_move, dept)
+        #Pawn Best move
+        Score, best_move = self.pawn_best_move(board, Player_turn, Score, best_move, last_move, dept)
 
         # print(f"minmax {knight_best_move}")
         return Score, best_move

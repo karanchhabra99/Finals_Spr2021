@@ -61,8 +61,9 @@ class GameState():
     def makeMove(self, start_square, end_square):
         flag = 0
         if self.game_type == 3:
-            start_square, end_square = self.AIvsAI()
-            flag = 1
+            if not self.game_over:
+                start_square, end_square = self.AIvsAI()
+                flag = 1
 
         if not self.game_over:
             if self.game_type == 1:
