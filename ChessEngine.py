@@ -75,8 +75,11 @@ class GameState():
                     if self.board[start_square[0], start_square[1]] < 0:
                         flag = self.player2.play(self.board, start_square, end_square, self.Player_turn, self.last_move)
             elif self.game_type == 2:
-                ## Verified Player 2 moves also in case of Game Type 2
-                flag = self.player1.play(self.board, start_square, end_square, self.Player_turn, self.last_move)
+                if self.Player_turn == 1:
+                    ## Verified Player 2 moves also in case of Game Type 2
+                    flag = self.player1.play(self.board, start_square, end_square, self.Player_turn, self.last_move)
+                else:
+                    flag = 1
 
         ## Makes the move
         if flag == 1:
