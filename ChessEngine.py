@@ -123,7 +123,7 @@ class Pawn():
         self.dim = dim
         self.Player_turn = 1
 
-    def pawn_move_checker_en_passant(self, board, current_location, next_location, last_move, Player_turn):
+    def pawn_move_checker_en_passant(self, board, current_location, next_location, last_move, Player_turn, AI = False):
         self.Player_turn = Player_turn
 
         if next_location in self.all_move_pawn(current_location, next_location):
@@ -131,18 +131,21 @@ class Pawn():
             if check[0]:
                 flag = 1
                 if (next_location[0] == 0):
-                    new_piece = input("Q or R or K or B: ")
-                    if new_piece.lower() == "q":
+                    if AI:
                         board[current_location[0], current_location[1]] = self.Player_turn * 9
-                    elif new_piece.lower() == "r":
-                        board[current_location[0], current_location[1]] = self.Player_turn * 5
-                    elif new_piece.lower() == "k":
-                        board[current_location[0], current_location[1]] = self.Player_turn * 3
-                    elif new_piece.lower() == "b":
-                        board[current_location[0], current_location[1]] = self.Player_turn * 2
                     else:
-                        print("Invalid Input\nConverting the piece to Queen")
-                        board[current_location[0], current_location[1]] = self.Player_turn * 9
+                        new_piece = input("Q or R or K or B: ")
+                        if new_piece.lower() == "q":
+                            board[current_location[0], current_location[1]] = self.Player_turn * 9
+                        elif new_piece.lower() == "r":
+                            board[current_location[0], current_location[1]] = self.Player_turn * 5
+                        elif new_piece.lower() == "k":
+                            board[current_location[0], current_location[1]] = self.Player_turn * 3
+                        elif new_piece.lower() == "b":
+                            board[current_location[0], current_location[1]] = self.Player_turn * 2
+                        else:
+                            print("Invalid Input\nConverting the piece to Queen")
+                            board[current_location[0], current_location[1]] = self.Player_turn * 9
 
                 ## En passant
                 if check[1] == 1:
@@ -574,7 +577,7 @@ class Move():
         self.dim = dim
         self.Player_turn = 1
 
-    def check_piece_and_play(self, board, current_location, next_location, Player_turn, last_move):
+    def check_piece_and_play(self, board, current_location, next_location, Player_turn, last_move, AI = False):
         self.Player_turn = Player_turn
         if board[current_location[0], current_location[1]] == self.Player_turn * 1:
             ## Flipping the board for black player
@@ -590,9 +593,9 @@ class Move():
                 inverse_end = np.where(black_board == 25)
                 board[next_location[0], next_location[1]] = temp2
                 return self.pawn.pawn_move_checker_en_passant(black_board, inverse_start, inverse_end, last_move,
-                                                              Player_turn)
+                                                              Player_turn, AI)
             else:
-                return self.pawn.pawn_move_checker_en_passant(board, current_location, next_location, last_move, Player_turn)
+                return self.pawn.pawn_move_checker_en_passant(board, current_location, next_location, last_move, Player_turn, AI)
         elif board[current_location[0], current_location[1]] == self.Player_turn * 2:
             return self.bishop.bishop_move_checker(board, current_location, next_location, Player_turn)
         elif board[current_location[0], current_location[1]] == self.Player_turn * 3:
