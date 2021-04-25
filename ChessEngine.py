@@ -85,7 +85,7 @@ class GameState():
                     if abs(self.board[start_square[0], start_square[1]]) == 5:
                         self.move.rook.remove_pawns(self.board, (start_square[0], start_square[1]), (end_square[0], end_square[1]))
                 if abs(self.board[start_square[0], start_square[1]]) == 1:
-                    if (start_square[0] == 0) or (start_square[0] == 7):
+                    if (end_square[0] == 0) or (end_square[0] == 7):
                         self.board[start_square[0], start_square[1]] = 9 * self.Player_turn
             self.last_move = (self.board[start_square[0], start_square[1]], end_square[0], end_square[1])
             self.board[end_square[0], end_square[1]] = self.board[start_square[0], start_square[1]]
