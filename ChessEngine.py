@@ -520,47 +520,48 @@ class King():
 
     def king_move_checker(self, board, current_location, next_location, Player_turn):
         self.Player_turn = Player_turn
-        if next_location in self.king_moves(board, current_location):
+        if next_location in self.king_moves(board, current_location, Player_turn):
             return 1
         return 0
 
-    def king_moves(self, board, current_location):
+    def king_moves(self, board, current_location, Player_turn):
         all_move =[]
         row_plus = False
         row_minus = False
         col_plus = False
         col_minus = False
+
         # row
         if current_location[0] + 1 < 8:
-            self.king_moves_helper(board, current_location[0] + 1, current_location[1], all_move)
+            self.king_moves_helper(board, current_location[0] + 1, current_location[1],Player_turn, all_move)
             row_plus= True
         if current_location[0] - 1 >= 0:
-            self.king_moves_helper(board, current_location[0] - 1, current_location[1], all_move)
+            self.king_moves_helper(board, current_location[0] - 1, current_location[1],Player_turn,  all_move)
             row_minus = True
 
         # Col
         if current_location[1] + 1 < self.dim:
-            self.king_moves_helper(board, current_location[0], current_location[1]+1, all_move)
+            self.king_moves_helper(board, current_location[0], current_location[1]+1,Player_turn,  all_move)
             col_plus = True
         if current_location[1] - 1 >= 0:
-            self.king_moves_helper(board, current_location[0], current_location[1]-1, all_move)
+            self.king_moves_helper(board, current_location[0], current_location[1]-1,Player_turn, all_move)
             col_minus = True
 
         if (row_plus and col_plus):
-            self.king_moves_helper(board, current_location[0] + 1, current_location[1] + 1, all_move)
+            self.king_moves_helper(board, current_location[0] + 1, current_location[1] + 1,Player_turn, all_move)
 
         if (row_plus and col_minus):
-            self.king_moves_helper(board, current_location[0] + 1, current_location[1] - 1, all_move)
+            self.king_moves_helper(board, current_location[0] + 1, current_location[1] - 1,Player_turn, all_move)
 
         if (row_minus and col_plus):
-            self.king_moves_helper(board, current_location[0] - 1, current_location[1] + 1, all_move)
+            self.king_moves_helper(board, current_location[0] - 1, current_location[1] + 1,Player_turn, all_move)
 
         if (row_minus and col_minus):
-            self.king_moves_helper(board, current_location[0] - 1, current_location[1] - 1, all_move)
+            self.king_moves_helper(board, current_location[0] - 1, current_location[1] - 1,Player_turn, all_move)
         return all_move
 
-    def king_moves_helper(self, board, row, col, all_move):
-        if self.Player_turn == 1:
+    def king_moves_helper(self, board, row, col, Player_turn, all_move):
+        if Player_turn == 1:
             if board[row, col] <= 0:
                 all_move.append((row, col))
         else:

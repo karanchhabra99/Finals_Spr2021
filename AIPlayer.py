@@ -80,7 +80,7 @@ class AIPlayer():
     def king_best_move(self, board, Player_turn, Score, best_move, dept):
         all_king = np.where(board == 1000 * Player_turn)
         if len(all_king[0]) !=0:
-            all_king_moves = self.move.king.king_moves(board, (all_king[0][0], all_king[1][0]))
+            all_king_moves = self.move.king.king_moves(board, (all_king[0][0], all_king[1][0]), Player_turn)
 
             for each_move in all_king_moves:
                 Score, best_move = self.all_moves_helper(board, None, all_king, 0, each_move, Player_turn, dept,
@@ -166,7 +166,7 @@ class AIPlayer():
     def Minimax_pawn_helper(self, board, all_pawns, p, each_move, Score, Player_turn, best_move, dept, Queen = False):
         Score, best_move = self.all_moves_helper(board, None, all_pawns, p, each_move, Player_turn, dept,
                                                  best_move,
-                                                 Score)
+                                                 Score, Queen)
         return Score, best_move
 
     def board_score_helper(self, board, Player_turn):
