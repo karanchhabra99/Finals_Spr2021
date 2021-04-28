@@ -150,13 +150,15 @@ class AIPlayer():
 
             for each_move in all_pawn_moves:
                 if (each_move[0] == 7) or (each_move[0] == 0):
-                    if self.move.check_piece_and_play(board, (all_pawns[0][p], all_pawns[1][p]), each_move,
-                                                   Player_turn, last_move, AI = True) == 1:
+                    board_pawn = copy.deepcopy(board)
+                    if self.move.check_piece_and_play(board_pawn, (all_pawns[0][p], all_pawns[1][p]), each_move,
+                                                      Player_turn, last_move, True) == 1:
                         Score, best_move = self.Minimax_pawn_helper(board, all_pawns, p, each_move,
-                                                                        Score,  Player_turn, best_move, dept,True)
-                elif self.move.check_piece_and_play(board, (all_pawns[0][p], all_pawns[1][p]), each_move,
-                                                    Player_turn, last_move) == 1:
-                    Score, best_move = self.Minimax_pawn_helper(board, all_pawns, p, each_move,
+                                                                    Score, Player_turn, best_move, dept, True)
+                else:
+                    if self.move.check_piece_and_play(board, (all_pawns[0][p], all_pawns[1][p]), each_move,
+                                                        Player_turn, last_move, True) == 1:
+                        Score, best_move = self.Minimax_pawn_helper(board, all_pawns, p, each_move,
                                                                         Score, Player_turn,
                                                                         best_move, dept)
 
