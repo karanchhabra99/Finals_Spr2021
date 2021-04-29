@@ -7,6 +7,20 @@ Handling user input.
 Displaying current GameStatus object.
 '''
 
+'''
+Player _turn 1 means whites turn and -1 means blacks turn
+
+White pieces are represented with following numbers:
+1. Pawn: 1
+2. Bishop: 2
+3. Knight: 3
+4. Rook: 5
+5. Queen: 9
+6. King: 1000
+
+And black pieces are represented with negative numbers as white 
+'''
+
 import pygame as p
 import ChessEngine
 

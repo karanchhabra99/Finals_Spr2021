@@ -1,8 +1,20 @@
 import numpy as np
 import copy
-import time
 
-# from ChessEngine import Move, Pawn, Knight, Bishop, Rook, Queen, King
+'''
+Player _turn 1 means whites turn and -1 means blacks turn
+
+White pieces are represented with following numbers:
+1. Pawn: 1
+2. Bishop: 2
+3. Knight: 3
+4. Rook: 5
+5. Queen: 9
+6. King: 1000
+
+And black pieces are represented with negative numbers as white 
+'''
+
 
 class AIPlayer():
     def __init__(self, dim, move, Player_turn, modified):
