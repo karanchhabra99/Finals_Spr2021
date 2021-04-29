@@ -171,11 +171,11 @@ class AIPlayer():
                                                  Score, Queen)
         return Score, best_move
 
-    def board_score_helper_score_cal(self, board, piece, Player_turn,piece_heuristic, piece_score, modified_score):
+    def board_score_helper_score_cal(self, board, piece, Player_turn,piece_heuristic, piece_score, multiple, modified_score):
         Score = 0
         all_piece = np.where(board == piece * Player_turn)
         for i in range(len(all_piece[0])):
-            Score += piece_heuristic[all_piece[0][i], all_piece[1][i]] + piece_score + modified_score
+            Score += multiple * piece_heuristic[all_piece[0][i], all_piece[1][i]] + piece_score + modified_score
         return Score
     def board_score_helper(self, board, Player_turn, board_state_heuristic):
         pawn_heuristic, knight_heuristic, bishop_heuristic, rook_heuristic, queen_heuristic = board_state_heuristic
@@ -191,15 +191,15 @@ class AIPlayer():
 
         ## Getting all pawn of maximizing player
         #Pawn
-        Score += self.board_score_helper_score_cal(board, 1, Player_turn, pawn_heuristic, 2, 0)
+        Score += self.board_score_helper_score_cal(board, 1, Player_turn, pawn_heuristic, 3,1, 0)
         # Queen
-        Score += self.board_score_helper_score_cal(board, 9, Player_turn, queen_heuristic, 100, 0)
+        Score += self.board_score_helper_score_cal(board, 9, Player_turn, queen_heuristic, 50,4, 0)
         # Knight
-        Score += self.board_score_helper_score_cal(board, 3, Player_turn, knight_heuristic, 10, knight_modified)
+        Score += self.board_score_helper_score_cal(board, 3, Player_turn, knight_heuristic, 10,2, knight_modified)
         # Bishop
-        Score += self.board_score_helper_score_cal(board, 2, Player_turn, bishop_heuristic, 10, bishop_modified)
+        Score += self.board_score_helper_score_cal(board, 2, Player_turn, bishop_heuristic, 10,2, bishop_modified)
         # Rook
-        Score += self.board_score_helper_score_cal(board, 5, Player_turn, bishop_heuristic, 50, rook_modified)
+        Score += self.board_score_helper_score_cal(board, 5, Player_turn, bishop_heuristic, 25,3, rook_modified)
 
         return Score
 
