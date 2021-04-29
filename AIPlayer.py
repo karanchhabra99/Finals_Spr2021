@@ -11,7 +11,7 @@ class AIPlayer():
         self.dept = 2
         self.Player_turn = Player_turn
         self.modified = modified
-        self.pawn_heuristic, self.knight_heuristic, self.bishop_heuristic, self.rook_heuristic, self.queen_heuristic = self.heuristic_dim_player()
+        self.board_state_heuristic_max, self.board_state_heuristic_min = self.heuristic_dim_player()
 
 
     def play(self, board, last_move):
@@ -171,38 +171,35 @@ class AIPlayer():
                                                  Score, Queen)
         return Score, best_move
 
-    def board_score_helper(self, board, Player_turn):
+    def board_score_helper_score_cal(self, board, piece, Player_turn,piece_heuristic, piece_score, modified_score):
         Score = 0
+        all_piece = np.where(board == piece * Player_turn)
+        for i in range(len(all_piece[0])):
+            Score += piece_heuristic[all_piece[0][i], all_piece[1][i]] + piece_score + modified_score
+        return Score
+    def board_score_helper(self, board, Player_turn, board_state_heuristic):
+        pawn_heuristic, knight_heuristic, bishop_heuristic, rook_heuristic, queen_heuristic = board_state_heuristic
+        Score = 0
+        if self.modified == 0:
+            knight_modified = 0
+            rook_modified = 0
+            bishop_modified = 0
+        else:
+            knight_modified = 4
+            rook_modified = 10
+            bishop_modified = 7
+
         ## Getting all pawn of maximizing player
-        all_pawns = np.where(board == 1 * Player_turn)
-        for i in range(len(all_pawns[0])):
-            Score += self.pawn_heuristic[all_pawns[0][i], all_pawns[1][i]] + 2
-
-        ## All Knight
-        all_knight = np.where(board == 3 * Player_turn)
-        for i in range(len(all_knight[0])):
-            Score += (2 * self.knight_heuristic[all_knight[0][i], all_knight[1][i]]) +10
-            if self.modified == 1:
-                Score += 4
-
-        ## All Bishop
-        all_bishop = np.where(board == 2 * Player_turn)
-        for i in range(len(all_bishop[0])):
-            Score += (2 * self.bishop_heuristic[all_bishop[0][i], all_bishop[1][i]]) + 10
-            if self.modified == 1:
-                Score += 4
-
-        ## All Rook
-        all_rook = np.where(board == 5 * Player_turn)
-        for i in range(len(all_rook[0])):
-            Score += (3 * self.rook_heuristic[all_rook[0][i], all_rook[1][i]]) + 50
-            if self.modified == 1:
-                Score += 4
-
-        ## All Queen
-        all_queen = np.where(board == 9 * Player_turn)
-        for i in range(len(all_queen[0])):
-            Score += (4 * self.rook_heuristic[all_queen[0][i], all_queen[1][i]]) + 100
+        #Pawn
+        Score += self.board_score_helper_score_cal(board, 1, Player_turn, pawn_heuristic, 2, 0)
+        # Queen
+        Score += self.board_score_helper_score_cal(board, 9, Player_turn, queen_heuristic, 100, 0)
+        # Knight
+        Score += self.board_score_helper_score_cal(board, 3, Player_turn, knight_heuristic, 10, knight_modified)
+        # Bishop
+        Score += self.board_score_helper_score_cal(board, 2, Player_turn, bishop_heuristic, 10, bishop_modified)
+        # Rook
+        Score += self.board_score_helper_score_cal(board, 5, Player_turn, bishop_heuristic, 50, rook_modified)
 
         return Score
 
@@ -213,8 +210,8 @@ class AIPlayer():
             else:
                 return 100000
 
-        maximizing_player_score = self.board_score_helper(board, self.Player_turn)
-        minimizing_player_score = self.board_score_helper(board, self.Player_turn * -1)
+        maximizing_player_score = self.board_score_helper(board, self.Player_turn, self.board_state_heuristic_max)
+        minimizing_player_score = self.board_score_helper(board, self.Player_turn * -1, self.board_state_heuristic_min)
 
         return maximizing_player_score - minimizing_player_score
 
@@ -241,14 +238,19 @@ class AIPlayer():
             rook = self.remove_both_side_col(rook)
             queen = self.remove_both_side_col(queen)
 
-        if self.Player_turn == -1:
-            pawn = np.flipud(pawn)
-            knight = np.flipud(knight)
-            bishop = np.flipud(bishop)
-            rook = np.flipud(rook)
-            queen = np.flipud(queen)
 
-        return pawn, knight, bishop, rook, queen
+        inverse_pawn = np.flipud(pawn)
+        inverse_knight = np.flipud(knight)
+        inverse_bishop = np.flipud(bishop)
+        inverse_rook = np.flipud(rook)
+        inverse_queen = np.flipud(queen)
+
+        board_state_heuristic_white = [pawn, knight, bishop, rook, queen]
+        board_state_heuristic_black = [inverse_pawn, inverse_knight, inverse_bishop, inverse_rook, inverse_queen]
+        if self.Player_turn == -1:
+            return board_state_heuristic_black, board_state_heuristic_white
+        return board_state_heuristic_white, board_state_heuristic_black
+
 
 
     def heuristic(self):
@@ -263,10 +265,10 @@ class AIPlayer():
                          [1, 1, 1, 1, 1, 1, 1, 1],
                          [0,0,0,0,0,0,0,0]])
 
-        knight = np.array([[8,8,8,8,8,8,8,8],
-                          [8,8,8,8,8,8,8,8],
+        knight = np.array([[6,6,6,6,6,6,6,6],
+                          [6,6,6,6,6,6,6,6],
                          [6,6,6,7,7,6,6,6],
-                         [5,5,5,6,6,5,5,5],
+                         [5,5,5,7,7,5,5,5],
                          [4,4,4,5,5,4,4,4],
                          [2,2,2,2,2,2,2,2],
                          [1, 1, 1, 1, 1, 1, 1, 1],
@@ -274,9 +276,9 @@ class AIPlayer():
 
         bishop = np.array([[4,4,4,5,5,4,4,4],
                          [4,4,4,5,5,4,4,4],
-                         [4,4,4,5,5,4,4,4],
+                         [4,5,5,6,6,5,5,4],
                          [5,5,5,6,6,5,5,5],
-                         [4,4,4,5,5,4,4,4],
+                         [4,4,5,5,5,5,4,4],
                          [2,2,2,2,2,2,2,2],
                            [1, 1, 1, 1, 1, 1, 1, 1],
                            [1, 1, 1, 1, 1, 1, 1, 1]])
