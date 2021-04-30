@@ -27,12 +27,7 @@ class AIPlayer():
 
 
     def play(self, board, last_move):
-        _, cur = self.Minimax(board, self.Player_turn, last_move, self.dept)
-        # print(f"Top: {cur}")
-        current_location, next_location = cur
-
-        # _, (current_location, next_location) = self.Minimax(board, self.Player_turn, last_move, self.dept)
-        # Checks if the move is valid
+        _, (current_location, next_location) = self.Minimax(board, self.Player_turn, last_move, self.dept)
         return current_location, next_location
 
     ## Reference: https://www.youtube.com/watch?v=l-hh51ncgDI&ab_channel=SebastianLague
@@ -58,7 +53,6 @@ class AIPlayer():
         #Pawn Best move
         Score, best_move = self.pawn_best_move(board, Player_turn, Score, best_move, last_move, dept)
 
-        # print(f"minmax {knight_best_move}")
         return Score, best_move
 
     def all_moves_helper(self, board, last_move_all, all_pieces, p, each_move, Player_turn, dept, best_move, Score, Queen = False, rook =False):
@@ -189,6 +183,7 @@ class AIPlayer():
         for i in range(len(all_piece[0])):
             Score += multiple * piece_heuristic[all_piece[0][i], all_piece[1][i]] + piece_score + modified_score
         return Score
+
     def board_score_helper(self, board, Player_turn, board_state_heuristic):
         pawn_heuristic, knight_heuristic, bishop_heuristic, rook_heuristic, queen_heuristic = board_state_heuristic
         Score = 0
